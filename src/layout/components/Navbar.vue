@@ -17,9 +17,9 @@
            <router-link to="/profile/index">
              <el-dropdown-item>设置</el-dropdown-item>
            </router-link>
-          <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
+          <!--<a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
             <el-dropdown-item>文档</el-dropdown-item>
-          </a>
+          </a>-->
           <el-dropdown-item divided @click.native="logout">
             <span style="display:block;">退出登录</span>
           </el-dropdown-item>
