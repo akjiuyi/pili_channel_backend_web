@@ -16,11 +16,11 @@ export function incomeStatInfo(params) {
   })
 }
 
-export function applyWithdraw(params) {
+export function applyWithdraw(data) {
   return request({
     url: '/order/applyWithdraw',
     method: 'post',
-    params: params
+    data
   })
 }
 

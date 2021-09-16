@@ -106,7 +106,7 @@
       </el-table-column>
       <el-table-column align="center" label="支付方式">
         <template slot-scope="scope">
-          {{ scope.row.nickname }}
+          {{ scope.row.paymentChannelName }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="时间">
@@ -231,7 +231,8 @@ export default {
       this.total = res.total
     },
     incomeStatInfo: async function() {
-      const res = await incomeStatInfo(this.query)
+      //const res = await incomeStatInfo(this.query)
+      const res = await incomeStatInfo()
       this.$nextTick(function() {
          this.statInfo = res
       })
@@ -265,7 +266,8 @@ export default {
     confirmHandleWithdraw: async function(formName) {
       this.$refs[formName].validate(async(valid) => {
             if (valid) {
-              await applyWithdraw(this.withdrawInfo)
+             const res = await applyWithdraw(this.withdrawInfo)
+
               this.$message({
                 type: 'success',
                 message: '提现申请成功'
