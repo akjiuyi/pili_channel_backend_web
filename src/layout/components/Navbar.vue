@@ -7,7 +7,9 @@
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
+          <!--<img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">-->
+          <span style="font-size:1rem;">{{userData.username}}</span>
+          <img src="@/assets/images/avatar.gif" class="user-avatar">
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
@@ -33,17 +35,33 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import { getInfo } from '@/api/user'
 
 export default {
   components: {
     Breadcrumb,
     Hamburger
   },
+  data() {
+    return {
+      userData: {
+        username: '',
+        createdAt: '',
+        password: '',
+        newPassword: '',
+        checkNewPass: ''
+      }
+    }
+  },
   computed: {
     ...mapGetters([
       'sidebar',
-      'avatar'
+      'avatar',
+      'name'
     ])
+  },
+  created() {
+    this.getInfo()
   },
   methods: {
     toggleSideBar() {
@@ -52,6 +70,10 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+    getInfo: async function() {
+      const userInfo = await getInfo()
+      this.userData = userInfo
     }
   }
 }

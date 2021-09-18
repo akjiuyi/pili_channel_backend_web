@@ -98,7 +98,6 @@ const actions = {
         visitedViews: [...state.visitedViews],
         cachedViews: [...state.cachedViews]
       })
-      console.log(state.cachedViews)
     })
   },
   delVisitedView({ commit, state }, view) {

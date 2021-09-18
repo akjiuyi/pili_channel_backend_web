@@ -21,9 +21,9 @@
           <div class="val">{{ this.statInfo.freezeWithdraw }}</div>
           <div class="desc">提现中</div>
       </el-col>
-      <el-col :span="4" class="btn">
+      <!--<el-col :span="4" class="btn">
           <div><span class="desc">满{{ this.statInfo.withdrawLimit }}元可提现</span><el-button style="margin-left: 20px;" type="primary" @click="handleWithdraw()">提现</el-button></div>
-      </el-col>
+      </el-col>-->
     </el-row>
     <el-form ref="query" :model="query" label-width="80px;" :inline="true">
       <el-form-item label="用户名:" prop="nickname">

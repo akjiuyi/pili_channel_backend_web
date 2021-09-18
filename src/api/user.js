@@ -16,3 +16,19 @@ export function resetPwd(params) {
   })
 }
 
+export function channelUserLists(data) {
+  return request({
+    url: '/user/channelUserLists',
+    method: 'POST',
+    data
+  })
+}
+
+export function summaryInfo(data) {
+  return request({
+    url: '/user/summaryInfo',
+    method: 'POST',
+    data
+  })
+}
+
