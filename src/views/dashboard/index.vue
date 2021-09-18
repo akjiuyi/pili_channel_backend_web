@@ -68,13 +68,13 @@
       <el-form-item label="日期选项">
         <el-col :span="11">
           <el-form-item prop="startDate">
-            <el-date-picker v-model="query.startDate" type="date" placeholder="选择开始时间" style="width: 100%;" value-format="yyyy-MM-dd" />
+            <el-date-picker v-model="startDate" type="date" placeholder="选择开始时间" style="width: 100%;" value-format="yyyy-MM-dd" />
           </el-form-item>
         </el-col>
         <el-col class="line" :span="1" style="text-align: center;margin-right: 10px;">至</el-col>
         <el-col :span="11">
           <el-form-item prop="endDate">
-            <el-date-picker v-model="query.endDate" type="date" placeholder="选择结束时间" style="width: 104%;" value-format="yyyy-MM-dd" />
+            <el-date-picker v-model="endDate" type="date" placeholder="选择结束时间" style="width: 104%;" value-format="yyyy-MM-dd" />
           </el-form-item>
         </el-col>
       </el-form-item>
@@ -119,7 +119,8 @@
         <template slot-scope="scope">
           <pre>
             注册时间：{{ scope.row.create_time }}
-            <span v-show="scope.row.vip_expired">会员到期时间：{{ scope.row.vip_expired }}</span>
+            <span v-show="scope.row.vip_expired">会员到期：{{ scope.row.vip_expired }}</span>
+            <span v-show="scope.row.last_access">最近访问：{{ scope.row.last_access }}</span>
           </pre>
         </template>
       </el-table-column>
@@ -144,6 +145,10 @@ export default {
   components: { Pagination },
   data() {
     return {
+      startDate:'',
+      endDate:'',
+      startDateComp:'',
+      endDateComp:'',
       query: Object.assign({}, defaultQuery),
       pageSizes:[10, 20, 30, 40, 50, 100],
       list: [],
@@ -170,7 +175,53 @@ export default {
     this.summaryInfo1(this.query)
     this.channelUserLists(this.query)
   },
-  methods: {
+  watch: {
+    startDate(val) {
+      if(val){
+        this.startDateComp = val;
+        this.startDateComp = this.startDateComp.replace(/-/g, "")
+
+        if(this.endDate){
+          this.endDateComp = this.endDate;
+          this.endDateComp = this.endDateComp.replace(/-/g, "")
+
+          if(Number(this.startDateComp)>Number(this.endDateComp)){
+            this.$message.error('开始日期应该小于结束日期');
+            this.startDate = '';
+            this.query.startDate = this.startDate;
+            return ;
+          }
+        }
+
+        this.query.startDate = val;
+      }else{
+        this.query.startDate = val;
+      }
+    },
+    endDate(val) {
+      if(val){
+        this.endDateComp = val;
+        this.endDateComp = this.endDateComp.replace(/-/g, "")
+
+        if(this.startDate){
+          this.startDateComp = this.startDate;
+          this.startDateComp = this.startDateComp.replace(/-/g, "")
+
+          if(Number(this.startDateComp)>Number(this.endDateComp)){
+            this.$message.error('开始日期应该小于结束日期');
+            this.endDate = '';
+            this.query.endDate = this.endDate;
+            return ;
+          }
+        }
+
+        this.query.endDate = val;
+      }else{
+        this.query.endDate = val;
+      }
+    }
+  },
+   methods: {
     channelUserLists: async function() {
       const res = await channelUserLists(this.query)
       this.list = res.items
@@ -199,17 +250,13 @@ export default {
         confirmButtonText: '确定',
         type: 'warning'
       }).then(() => {
-
-
         let url = '',data = this.query;
         for(let i in data){
           url += "&" + i + "=" + data[i]
         }
 
         url = url.substring(1)+"&channel_id="+this.summaryInfo.channelId;
-
         window.location.href = "/test/exportFirstPageStatistics?" + url;
-
       }).catch(() => {
 
       });
