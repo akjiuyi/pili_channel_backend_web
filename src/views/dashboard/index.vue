@@ -242,6 +242,10 @@ export default {
         page: this.query.page,
         pageSize: this.query.pageSize
       }
+
+      this.$data.startDate = null;
+      this.$data.endDate = null;
+
       this.summaryInfo1(this.query)
       this.channelUserLists(this.query)
     },
