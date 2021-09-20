@@ -62,7 +62,8 @@ export default {
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+        //callback(new Error('The password can not be less than 6 digits'))
+        callback(new Error('密码应大于6位'))
       } else {
         callback()
       }

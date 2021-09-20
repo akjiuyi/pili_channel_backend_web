@@ -29,6 +29,8 @@
 
 <script>
 import { getInfo, resetPwd } from '@/api/user'
+import { MessageBox } from 'element-ui'
+import store from '@/store'
 export default {
   data() {
     var validateNewPass = (rule, value, callback) => {
@@ -99,16 +101,36 @@ export default {
     },
     resetPwd: async function() {
       const data = await resetPwd(this.userData)
-      this.editPassword = false
-      this.$message({
+
+      //this.editPassword = false
+      /*this.$message({
         type: 'success',
         message: '更新成功'
       })
-      this.userData.newPassword = this.userData.password = ''
+
+      //this.userData.newPassword = this.userData.password = ''
       if (data.resetToken === true) {
         await this.$store.dispatch('user/logout')
         this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      }*/
+
+
+      if (data.resetToken === true) {
+          MessageBox.alert('密码修改成功，请重新登陆', '确认退出',{
+            confirmButtonText: '重新登陆',
+            type: 'warning'
+          }).then(() => {
+            store.dispatch('user/resetToken').then(() => {
+              this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+            })
+          });
+      }else{
+        this.$message({
+          type: 'error',
+          message: '更新失败'
+        })
       }
+
     }
   }
 }
