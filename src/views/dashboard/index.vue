@@ -112,12 +112,14 @@
       </el-table-column>
       <el-table-column align="center" label="订单信息" width="340">
         <template slot-scope="scope">
-          {{ scope.row.order_info.buy_time}}
-          <br/>
-          {{ scope.row.order_info.buy_title}}
-          <br/>
-          <!--<span v-if="scope.row.order_info" @mouseover="showMore(scope.row.id)">查看更多...</span>-->
-          <span v-if="scope.row.order_count>1" @click="showMore(scope.row.id)" style="color: #409eff">查看更多...</span>
+          <div style="text-align: left">
+            {{ scope.row.order_info.buy_time}}
+            <br/>
+            {{ scope.row.order_info.buy_title}}
+            <br/>
+            <!--<span v-if="scope.row.order_info" @mouseover="showMore(scope.row.id)">查看更多...</span>-->
+            <span v-if="scope.row.order_count>1" @click="showMore(scope.row.id)" style="color: #409eff">查看更多...</span>
+          </div>
         </template>
       </el-table-column>
       <el-table-column align="center" label="时间" width="340">
@@ -132,13 +134,13 @@
     </el-table>
     <pagination v-show="total>0" :total="total" :page-sizes="pageSizes" :page.sync="query.page" :limit.sync="query.pageSize" @pagination="channelUserLists"/>
 
-    <el-dialog title="订单列表"  :lock-scroll="true" width="35%" :visible.sync="dialogTableVisible">
+    <el-dialog title="订单列表"  :lock-scroll="true" width="35%" :visible.sync="dialogTableVisible" @closed="closeOrderList">
       <el-table :data="gridData" >
         <el-table-column property="trade_amount" label="消费金额" width="150"></el-table-column>
         <el-table-column property="title" label="购买商品"></el-table-column>
         <el-table-column property="update_time" label="购买时间"></el-table-column>
       </el-table>
-      <pagination v-show="true" :total="orderTotal" :page-sizes="pageSizes" :page.sync="orderQuery.page" :limit.sync="orderQuery.pageSize" @pagination="userOrderLists"/>
+      <pagination v-show="true" :total="orderTotal" :page-sizes="pageSizes" :page.sync="orderQuery.page" :limit.sync="orderQuery.pageSize"  @pagination="userOrderLists"/>
     </el-dialog>
   </div>
 </template>
@@ -151,7 +153,7 @@ import { mapGetters } from 'vuex'
 const defaultQuery = {
   page: 1,
   pageSize: 10,
-  dataOptionValue:0
+  dataOptionValue:null
 }
 
 export default {
@@ -299,6 +301,9 @@ export default {
           const res = await getMoreOrder(this.orderQuery)
           this.$data.gridData = res.lists;
           this.$data.orderTotal = res.total
+     },
+     closeOrderList() {
+       this.orderQuery.page = 1
      }
   }
 
