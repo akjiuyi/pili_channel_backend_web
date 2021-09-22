@@ -32,3 +32,11 @@ export function summaryInfo(data) {
   })
 }
 
+export function getMoreOrder(data) {
+  return request({
+    url: '/user/getMoreOrder',
+    method: 'POST',
+    data
+  })
+}
+
