@@ -110,34 +110,50 @@
           {{ scope.row.trade_amount }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="订单信息">
+      <el-table-column align="center" label="订单信息" width="340">
         <template slot-scope="scope">
-          {{ scope.row.order_info }}
+          <div style="text-align: left">
+            {{ scope.row.order_info.buy_time}}
+            <br/>
+            {{ scope.row.order_info.buy_title}}
+            <br/>
+            <!--<span v-if="scope.row.order_info" @mouseover="showMore(scope.row.id)">查看更多...</span>-->
+            <span v-if="scope.row.order_count>1" @click="showMore(scope.row.id)" style="color: #409eff">查看更多...</span>
+          </div>
         </template>
       </el-table-column>
       <el-table-column align="center" label="时间" width="340">
         <template slot-scope="scope">
           <pre>
             注册时间：{{ scope.row.create_time }}
-            <span v-show="scope.row.vip_expired">会员到期：{{ scope.row.vip_expired }}</span>
-            <span v-show="scope.row.last_access">最近访问：{{ scope.row.last_access }}</span>
+            <span v-if="scope.row.vip_expired">会员到期：{{ scope.row.vip_expired }}</span>
+            <span v-if="scope.row.last_access">最近访问：{{ scope.row.last_access }}</span>
           </pre>
         </template>
       </el-table-column>
     </el-table>
-
     <pagination v-show="total>0" :total="total" :page-sizes="pageSizes" :page.sync="query.page" :limit.sync="query.pageSize" @pagination="channelUserLists"/>
+
+    <el-dialog title="订单列表"  :lock-scroll="true" width="35%" :visible.sync="dialogTableVisible" @closed="closeOrderList">
+      <el-table :data="gridData" >
+        <el-table-column property="trade_amount" label="消费金额" width="150"></el-table-column>
+        <el-table-column property="title" label="购买商品"></el-table-column>
+        <el-table-column property="update_time" label="购买时间"></el-table-column>
+      </el-table>
+      <pagination v-show="true" :total="orderTotal" :page-sizes="pageSizes" :page.sync="orderQuery.page" :limit.sync="orderQuery.pageSize"  @pagination="userOrderLists"/>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { channelUserLists,summaryInfo } from '@/api/user'
+import { channelUserLists,summaryInfo,getMoreOrder } from '@/api/user'
 import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
 
 const defaultQuery = {
   page: 1,
-  pageSize: 10
+  pageSize: 10,
+  dataOptionValue:null
 }
 
 export default {
@@ -150,10 +166,12 @@ export default {
       startDateComp:'',
       endDateComp:'',
       query: Object.assign({}, defaultQuery),
+      orderQuery: Object.assign({}, defaultQuery),
       pageSizes:[10, 20, 30, 40, 50, 100],
       list: [],
       tableHeight: 600,
       total: 0,
+      orderTotal: 0,
       dataOption: [{
         id: 1,
         value: 1,
@@ -163,7 +181,9 @@ export default {
         value: 2,
         label: '昨天数据'
       }],
-      summaryInfo:{}
+      summaryInfo:{},
+      dialogTableVisible: false,
+      gridData: []
     }
   },
   computed: {
@@ -264,7 +284,27 @@ export default {
       }).catch(() => {
 
       });
-    }
+    },
+     showMore:async function(member_id) {
+       this.$data.dialogTableVisible = true;
+
+       this.orderQuery.member_id = member_id;
+       this.orderQuery.dataOptionValue = this.query.dataOptionValue
+       this.orderQuery.startDate = this.startDate
+       this.orderQuery.endDate = this.endDate
+
+       const res = await getMoreOrder(this.orderQuery)
+       this.$data.gridData = res.lists;
+       this.$data.orderTotal = res.total
+     },
+     userOrderLists:async function() {
+          const res = await getMoreOrder(this.orderQuery)
+          this.$data.gridData = res.lists;
+          this.$data.orderTotal = res.total
+     },
+     closeOrderList() {
+       this.orderQuery.page = 1
+     }
   }
 
 }
